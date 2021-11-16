@@ -27,6 +27,7 @@
 							<td>{{ task.name }}</td>
 							<td>{{ task.description }}</td>
 							<td>{{ task.dueAt | date('d/m/Y H:i')}}</td>
+							<td>{{ task.tag.name }}</td>
 						</tr>
 
 					{% endfor %}
