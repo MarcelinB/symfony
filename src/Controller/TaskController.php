@@ -47,7 +47,9 @@ class TaskController extends AbstractController
 
     /** 
      *@Route("/task/create", name="task_create")
+     *@Route("/task/update/{id}", name="task_update", requirements={"id"="\d+"})
      */
+
     public function task(Task $task = null, Request $request)
     {
         if (!$task) {
@@ -81,7 +83,7 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/task/delete/{id}"), name="task_delete", requirements={"id"="\d+"}
+     * @Route("/task/delete/{id}", name="task_delete", requirements={"id"="\d+"})
      */
     public function deleteTask(Task $task): Response
     {
