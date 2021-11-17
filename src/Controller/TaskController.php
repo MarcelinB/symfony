@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Controller;
 
 use App\Entity\Task;
@@ -10,6 +11,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 
 class TaskController extends AbstractController
 {
@@ -34,6 +38,10 @@ class TaskController extends AbstractController
      */
     public function index(): Response
     {
+        //récuperer les infos de l'utilisateur connecté 
+        $user = $this->getUser();
+        //dd($user);
+
         // Dans le repo, on récupère les entrées
         $tasks = $this->repository->findAll();
 
@@ -41,7 +49,7 @@ class TaskController extends AbstractController
         // dd($tasks);
 
         return $this->render('task/index.html.twig', [
-            'tasks' => $tasks,
+            'tasks' => $tasks
         ]);
     }
 
@@ -91,5 +99,42 @@ class TaskController extends AbstractController
         $this->manager->flush();
 
         return $this->redirectToRoute("task_listing");
+    }
+
+    /**
+     * @Route("/task/listing/download", name="task_download")
+     */
+    public function downloadPdf()
+    {
+        $tasks = $this->repository->findAll();
+
+        // Définition des options du pdf
+        $pdfoption = new Options;
+
+        //Police par default 
+        $pdfoption->set('defaultFont', 'Arial');
+        $pdfoption->setIsRemoteEnabled(true);
+
+        // On instancie DOMDF
+        $dompdf = new Dompdf($pdfoption);
+
+        //On genére le html 
+        $html = $this->renderView('task/pdfdownload.html.twig',  [
+            'tasks' => $tasks,
+        ]);
+
+        $dompdf->load_html($html);
+        $dompdf->set_paper('A4', 'landscape');
+        $dompdf->render();
+
+        //On génère un nom de fichier 
+
+        $fichier = 'LE PDF OUAIS OUAIS OUAIS CA MARCHE';
+
+        //Envoyer le pdf au navigateur
+        $dompdf->stream($fichier, [
+            'Attachement' => true
+        ]);
+        return new Response();
     }
 }
