@@ -3,20 +3,27 @@
 
 namespace App\Controller;
 
+use Dompdf\Dompdf;
+use App\Service\CallApiService;
+use Dompdf\Options;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
+use App\Service\Bartender;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Dompdf\Dompdf;
-use Dompdf\Options;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
 class TaskController extends AbstractController
 {
+    /**
+     * @beerList
+     */
+    // public static $beerList = [];
+
     /** 
      * @var TaskRepository
      */
@@ -33,6 +40,7 @@ class TaskController extends AbstractController
         $this->repository = $repository;
         $this->manager = $manager;
     }
+
     /**
      *@Route("/task/listing", name="task_listing")
      */
@@ -137,4 +145,14 @@ class TaskController extends AbstractController
         ]);
         return new Response();
     }
+
+    /**
+     * @Route("/task/create", name="OK")
+     */
+    /*public function viewApi(CallApiService $callApiService)
+    {
+        $bartender = new Bartender();
+        $beerList = $bartender->filterBeers($callApiService->getBeerTitle());
+        return $beerList;
+    }*/
 }
