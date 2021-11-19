@@ -74,6 +74,10 @@ class TaskController extends AbstractController
             $task->setCreatedAt(new \DateTime());
         }
 
+        $this->addFlash(
+            'success',
+            'L\'action a bien été effectuée'
+        );
 
         $form = $this->createForm(TaskType::class, $task, []);
 
@@ -105,6 +109,11 @@ class TaskController extends AbstractController
     {
         $this->manager->remove($task);
         $this->manager->flush();
+
+        $this->addFlash(
+            'success',
+            'La suppression a bien été effectuée'
+        );
 
         return $this->redirectToRoute("task_listing");
     }
