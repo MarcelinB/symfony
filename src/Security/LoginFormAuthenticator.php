@@ -2,6 +2,10 @@
 
 namespace App\Security;
 
+use App\Repository\TaskRepository;
+use App\Service\MailerService;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,9 +28,27 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     private $urlGenerator;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator)
+    /**
+     * @var MailerService
+     */
+    private $mailer;
+
+    /**
+     * @var TaskRepository
+     */
+    private $repository;
+
+    /**
+     * @var EntityManagerInterface
+     */
+    private $manager;
+
+    public function __construct(MailerService $mailer, TaskRepository $repository, EntityManagerInterface $manager, UrlGeneratorInterface $urlGenerator)
     {
         $this->urlGenerator = $urlGenerator;
+        $this->repository = $repository;
+        $this->mailer = $mailer;
+        $this->manager = $manager;
     }
 
     public function authenticate(Request $request): PassportInterface
@@ -46,6 +68,42 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        $mailUser = $request->request->get('email');
+        $username = explode('@', $mailUser)[0];
+        $now = new DateTime();
+        $tasks = $this->repository->findAll();
+
+        $msg = "";
+
+        foreach ($tasks as $task) {
+            $diffDate = $now->diff($task->getDueAt());
+            $parameters = [
+                'username' => $username,
+                'task' => $task,
+                'msg' => $msg
+            ];
+
+            if ($diffDate->days <= 2 && ($now <  $task->getDueAt())) {
+                $msg = " arrive à échéance le ";
+                $this->mailer->sendEmail(
+                    "Attention ! Votre tâche arrive à échéance",
+                    $mailUser,
+                    $mailUser,
+                    'emails/alert.html.twig',
+                    $parameters
+                );
+            } else if ($now > $task->getDueAt()) {
+                $msg = " arrive est arrivé à échéance le ";
+                $this->mailer->sendEmail(
+                    "Attention ! Votre tâche arrive à échéance",
+                    $mailUser,
+                    $mailUser,
+                    'emails/alert.html.twig',
+                    $parameters
+                );
+            }
+        }
+
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
