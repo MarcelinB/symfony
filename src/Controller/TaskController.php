@@ -10,6 +10,7 @@ use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
 use App\Service\Bartender;
+use App\Service\BeerConnectionManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,10 +49,17 @@ class TaskController extends AbstractController
     {
         //récuperer les infos de l'utilisateur connecté 
         $user = $this->getUser();
+        $role = $user->getRoles();
+        $id = $user->getId();
+        $admin = 'ROLE_ADMIN';
         //dd($user);
-
+        if (in_array($admin, $role)) {
+            $tasks = $this->repository->findAll();
+        } else {
+            $tasks = $this->repository->findBy(['user' => $id]);
+        }
         // Dans le repo, on récupère les entrées
-        $tasks = $this->repository->findAll();
+        //$tasks = $this->repository->findAll();
 
         // Affichage dans le var_dumper
         // dd($tasks);
@@ -68,10 +76,18 @@ class TaskController extends AbstractController
 
     public function task(Task $task = null, Request $request)
     {
+        //$cc = new BeerConnectionManager(CallApiService $callApiService);
+        //$cc->test();
+        $tasktype = new Bartender();
+        $beerList = $tasktype->filterBeerList();
+
         if (!$task) {
             $task = new Task;
 
             $task->setCreatedAt(new \DateTime());
+
+            $user = $this->getUser();
+            $task->setUser($user);
         }
 
         $this->addFlash(
@@ -98,6 +114,10 @@ class TaskController extends AbstractController
         }
 
         return $this->render('task/create.html.twig', [
+            //ADD le tablo
+            //dd($beerList),
+
+            //dd le tablo
             'form' => $form->createView()
         ]);
     }

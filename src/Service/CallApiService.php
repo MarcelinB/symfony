@@ -14,7 +14,7 @@ class CallApiService
         $this->client = $client;
     }
 
-    public function getBeerTitle(): array
+    public function getBeerTitle()
     {
         $response = $this->client->request(
             'GET',
@@ -22,7 +22,7 @@ class CallApiService
         );
 
         $content = $response->toArray();
-
+        //dd($content);
 
         return $content;
     }

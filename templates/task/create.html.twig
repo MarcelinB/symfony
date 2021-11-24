@@ -1,9 +1,17 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
-	<div class="container">
+	<div class="container" id='louis'>
 		{{  form_start(form)  }}
 		{{  form_widget(form)  }}
 		{{  form_end(form)  }}
 	</div>
+
+{% endblock %}
+
+{% block javascripts %}
+	<script>
+		var beerList =
+	</script>
+	<script src="{{ asset('js/afficheDescription.js') }}"></script>
 {% endblock %}

@@ -3,34 +3,57 @@
 namespace App\Service;
 
 use App\Entity\Beer;
-use App\Service\CallApiService;
 use Sabberworm\CSS\Value\Size;
+use App\Service\CallApiService;
+use App\Service\BeerConnectionManager;
 
 /**
- * Eats CallApiService Array then filters name, description, date, into Beer objects
+ * Gets array from BeerCOnnectionManager then filters name, description, date, into Beer objects
  * feeds BeerList with Beer objects
+ * also, can make a beer list with names only
  */
 class Bartender
 {
+
     /**
-     * @Route("/task/listing/viewApi", name="viewApi")
      * @input Array $packet : packet fetched from API
-     * 
+     * @return array beer list (name+description) 
      */
-    function filterBeers(array $packet)
+    function filterPacket(): array
     {
-        $result = [];
+        $beerListNameDescriptionDate = [];
+        $packet = BeerConnectionManager::getPacket();
+
+        //dd($packet[0]->name);
 
         //Extract needed params for each object
         for ($i = 0; $i < count($packet); $i++) {
             $temp = new Beer;
-            $temp->setName($packet[$i]['name'])
-                ->setDescription($packet[$i]['description'])
-                ->setFirstBrew($packet[$i]['first_brewed']);
+            $temp->setName($packet[$i]->name)
+                ->setDescription($packet[$i]->description);
 
             //Push the beers into $temp
-            array_push($result, $temp);
+            array_push($beerListNameDescriptionDate, $temp);
         }
-        return $result;
+        //dd($beerListNameDescriptionDate);
+        return $beerListNameDescriptionDate;
+    }
+
+    /**
+     * @return array : beer list (name+name)
+     */
+    public function filterBeerList(): array
+    {
+        $FilteredBeerNameList = $this->filterPacket();
+        $beerListNameName = [];
+        //dd($beerListNameName);
+
+        for ($i = 0; $i < count($FilteredBeerNameList); $i++) {
+
+            array_push($beerListNameName, [$FilteredBeerNameList[$i]->getName() => $FilteredBeerNameList[$i]->getName()]);
+        }
+
+        //dd($beerListNameName);
+        return $beerListNameName;
     }
 }

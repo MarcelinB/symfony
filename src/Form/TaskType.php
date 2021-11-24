@@ -7,6 +7,7 @@ use App\Entity\Task;
 use App\Service\Bartender;
 use App\Service\CallApiService;
 use App\Controller\TaskController;
+use App\Service\BeerConnectionManager;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -31,56 +32,24 @@ class TaskType extends AbstractType
      */
     private $translator;
 
-
-    public $beerList = [];
     public $tempData = 'temp';
 
-    public function  __construct(CallApiService $callApiService, TranslatorInterface $translator)
+    public function  __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
-        $bartender = new Bartender();
-        $this->beerList = $bartender->filterBeers($callApiService->getBeerTitle());
-    }
-    public function filterBeerList()
-    {
-        $FilteredBeerNameList = [];
-        //dd($this->beerList);
-
-        for ($i = 0; $i < count($this->beerList); $i++) {
-
-            array_push($FilteredBeerNameList, [$this->beerList[$i]->getName() => $this->beerList[$i]->getName()]);
-        }
-
-        //dd($FilteredBeerNameList);
-        return $FilteredBeerNameList;
     }
 
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-
-        //$FilteredBeerNameList = $this->filterBeerList();
+        $bartender = new Bartender();
+        $filteredBeerListNameName = $bartender->filterBeerList();
 
         $builder
             ->add('name', ChoiceType::class, [
-                'choices' => $this->filterBeerList(),
+                'choices' => $filteredBeerListNameName,
                 'label' => $this->translator->trans('general.name')
             ])
-            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-                $product = $event->getData();
-                $form = $event->getForm();
-                var_dump($event->getData());
-                $this->tempData = $event;
-                // checks if the Product object is "new"
-                // If no data is passed to the form, the data is "null".
-                // This should be considered a new "Product"
-                if (!$product /*|| null === $product->getId()*/) {
-                    $form->add('name', ChoiceType::class, [
-                        'choices' => $this->filterBeerList(),
-                        'label' =>  $this->translator->trans('general.name')
-                    ]);
-                }
-            })
 
             ->add('description', TextareaType::class, ['label' => $this->translator->trans('general.description')])
             ->add('dueAt', DateTimeType::class, [
@@ -100,11 +69,10 @@ class TaskType extends AbstractType
                     'class' => 'btn-danger'
                 ]
             ]);
+
         //dd($this->tempData);
         //dd($builder->get('name')->getAttributes()['data_collector/passed_options']['choices'][0]);
     }
-    //->getViewTransformers()[0]
-
 
     public function configureOptions(OptionsResolver $resolver): void
     {
