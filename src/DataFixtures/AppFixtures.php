@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Status;
 use Faker\Factory;
 use App\Entity\Tag;
 use App\Entity\Task;
@@ -61,6 +62,16 @@ class AppFixtures extends Fixture
             $manager->persist($tag);
         }
 
+        //Boucle de création des statuts
+        for ($s = 0; $s < 3; $s++) {
+            $status = new Status;
+            // 1=ToDo, 2=WIP, 3=done
+            $status->setLabel($s + 1);
+            $manager->persist($status);
+        }
+
+
+
         // On push les catégories en BDD
         $manager->flush();
 
@@ -68,6 +79,7 @@ class AppFixtures extends Fixture
         $tags = $manager->getRepository(Tag::class)->findAll();
 
         $listeUsers = $manager->getRepository(User::class)->findAll();
+        $listStatus = $manager->getRepository(Status::class)->findAll();
         //Création entre 15 et 20 tâches aléatoirement
         for ($t = 0; $t < mt_rand(15, 30); $t++) {
             // Création d'un nouvel objet Task
@@ -79,8 +91,8 @@ class AppFixtures extends Fixture
                 ->setCreatedAt(new \DateTime())
                 ->setDueAt($faker->dateTimeBetween('now', '6 months'))
                 ->setTag($faker->randomElement($tags))
-                ->setUser($faker->randomElement($listeUsers));
-
+                ->setUser($faker->randomElement($listeUsers))
+                ->setStatus($faker->randomElement($listStatus));
             // On fait persister les données
             $manager->persist($task);
         }
