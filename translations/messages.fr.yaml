@@ -6,6 +6,7 @@ general:
   backhomepage: Retour à la page d'accueil
   requestpage: Vous n'avez pas les accès nécessaires pour accéder à cette page essayer une autre URL ou
   error403Titre: Accès Non Autorisé
+  title_list_task: Liste des tâches
   status:
     title: Statut
     1: À faire
@@ -19,6 +20,9 @@ general:
     delete: Supprimer
     add: Ajouter
     download: Télécharger
+    archive: Archiver
+    back: Retour
+    go_to_archive: Voir les archive
 datatables:
   sLengthMenu: Affichage de _MENU_ entrées par pages
   sSearch: Rechercher

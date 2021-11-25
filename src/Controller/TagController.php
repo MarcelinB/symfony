@@ -2,15 +2,16 @@
 
 namespace App\Controller;
 
+use Exception;
 use App\Entity\Tag;
+use App\Entity\Task;
 use App\Form\TagType;
 use App\Repository\TagRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @Route("/tag")

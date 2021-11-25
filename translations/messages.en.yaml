@@ -1,5 +1,6 @@
 general:
   name: Name
+  title_list_task: List of tasks
   description: Description
   due_date: Due Date
   category: Tag
@@ -19,6 +20,9 @@ general:
     delete: Delete
     add: Create
     download: Dowload
+    archive: Archive
+    back: Back
+    go_to_archive: See archives
 datatables:
   sLengthMenu: Show _MENU_ entries per page
   sSearch: Search
